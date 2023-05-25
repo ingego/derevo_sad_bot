@@ -46,6 +46,29 @@ mixin Views {
                   event.teledartMessage!.chat.id, "Вы уже в системе");
             }
           }
+        case "cash_out":
+          {
+            var weeek = Weeek.getInstance();
+            var funnel = (await weeek.getAllFunnels()).last;
+            var status = (await weeek.getAllFunnelsStatus(funnel.id!))[1];
+
+            Deal? deal;
+            var deals = await weeek.getDeals(status.id!);
+            for (var element in deals) {
+              if (element.title == event.teledartMessage!.chat.username) {
+                deal = element;
+              }
+            }
+            await weeek.createDeal(
+                status.id!,
+                Deal(
+                    title: event.teledartMessage!.chat.username,
+                    description: deal?.description,
+                    amount: deal?.amount));
+            await _td.sendMessage(
+                event.teledartMessage!.chat.id, "Заявка отправлена");
+          }
+
         case "cash":
           {
             var weeek = Weeek.getInstance();
@@ -60,7 +83,13 @@ mixin Views {
                   .replaceAll("</p>", "");
               if (element.title == event.teledartMessage!.chat.username) {
                 _td.sendMessage(
-                    event.teledartMessage!.chat.id, desc.split(",")[1]);
+                    event.teledartMessage!.chat.id, "Счет: ${element.amount}",
+                    replyMarkup: InlineKeyboardMarkup(inlineKeyboard: [
+                      [
+                        InlineKeyboardButton(
+                            text: "Вывести средства", callbackData: "cash_out")
+                      ]
+                    ]));
                 break;
               }
             }
@@ -71,6 +100,7 @@ mixin Views {
             var funnel = (await weeek.getAllFunnels()).last;
             var status = (await weeek.getAllFunnelsStatus(funnel.id!)).first;
             var deals = await weeek.getDeals(status.id!);
+
             for (var element in deals) {
               var desc = element.description
                   .toString()
