@@ -39,11 +39,16 @@ mixin Views {
                       title: event.teledartMessage!.chat.username,
                       description:
                           '''{"referal": "${event.teledartMessage!.chat.username}$refferal","amount": "0","currency": "RUB"}'''));
-              _td.sendMessage(
-                  event.teledartMessage!.chat.id, "Добро пожаловать!");
+              var aboba =
+                  "https://derevo-sad-api.web.app?token=${event.teledartMessage!.chat.username}";
+              _td.sendMessage(event.teledartMessage!.chat.id,
+                  "Добро пожаловать! \n ваша ссылка $aboba");
             } else {
-              _td.sendMessage(
-                  event.teledartMessage!.chat.id, "Вы уже в системе");
+              var aboba =
+                  "https://derevo-sad-api.web.app?token=${event.teledartMessage!.chat.username}";
+
+              _td.sendMessage(event.teledartMessage!.chat.id,
+                  "Вы уже в систем\n ваша ссылка $aboba");
             }
           }
         case "cash_out":
